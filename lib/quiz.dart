@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizee_app/quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Quiz extends StatefulWidget {
   const Quiz({Key? key}) : super(key: key);
@@ -11,6 +12,51 @@ class Quiz extends StatefulWidget {
 class _QuizState extends State<Quiz> {
   List<Widget> score = [];
   QuizBrain quizBrain = QuizBrain();
+  int num = 0;
+  Future<void> checkAnswer(bool userAnswer) async {
+    bool correctAnswer = quizBrain.getAnswer();
+    quizBrain.nextQuestion();
+
+    setState(() {
+      if (correctAnswer == userAnswer) {
+        print('correct................');
+        score.add(const Icon(
+          Icons.check,
+          color: Color(0xff044b04),
+        ));
+      } else {
+        print('wrong.................');
+        score.add(const Icon(
+          Icons.close,
+          color: Colors.red,
+        ));
+      }
+    });
+    if (quizBrain.isFinished()) {
+      quizBrain.restart();
+      await Future.delayed(const Duration(milliseconds: 500));
+      Alert(
+        context: context,
+        type: AlertType.success,
+        title: "questions finished",
+        desc:
+            "Close-ended questions are questions that have predetermined answers",
+        buttons: [
+          DialogButton(
+            onPressed: () => Navigator.pop(context),
+            width: 120,
+            child: const Text(
+              "Try Aging",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ],
+      ).show();
+      setState(() {
+        score = [];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,33 +88,12 @@ class _QuizState extends State<Quiz> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            if (quizBrain.getAnswer() == true) {
-                              print('correct................');
-                              score.add(Image.asset(
-                                'assets/images/icons8-select-checkmark-symbol-to-choose-true-answer-24.png',
-                                color: const Color(0xff044b04),
-                              ));
-                            } else {
-                              print('wrong.................');
-                              score.add(const Icon(
-                                Icons.close,
-                                color: Colors.red,
-                              ));
-                            }
-                          });
-                          quizBrain.nextQuestion();
-                        },
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                          ),
-                          child: const Center(child: Text('True')),
-                        ),
-                      ),
-                    ),
+                        child: ElevatedButton(
+                      onPressed: () {
+                        checkAnswer(true);
+                      },
+                      child: const Center(child: Text('True')),
+                    )),
                     const SizedBox(
                       width: 8,
                     ),
