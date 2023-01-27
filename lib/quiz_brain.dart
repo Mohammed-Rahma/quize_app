@@ -4,9 +4,9 @@ class QuizBrain {
   int num = 0;
   final List<Question> _questions = [
     Question(
-        '1Sea otters have a favorite rock they use to break open food.', false),
-    Question(
-        '2Sea otters have a favorite rock they use to break open food.', true),
+        'Sea otters have a favorite rock they use to break open food.', false),
+    Question('Polo takes up the largest amount of space in terms of land area.',
+        true),
     Question(
         'Prince Eric and Ariel from The Little Mermaid have a daughter named Princess Song.',
         false)

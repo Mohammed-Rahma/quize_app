@@ -13,6 +13,7 @@ class _QuizState extends State<Quiz> {
   List<Widget> score = [];
   QuizBrain quizBrain = QuizBrain();
   int num = 0;
+  bool isEnable = true;
   Future<void> checkAnswer(bool userAnswer) async {
     bool correctAnswer = quizBrain.getAnswer();
     quizBrain.nextQuestion();
@@ -33,8 +34,9 @@ class _QuizState extends State<Quiz> {
       }
     });
     if (quizBrain.isFinished()) {
+      isEnable = false;
       quizBrain.restart();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 800));
       Alert(
         context: context,
         type: AlertType.success,
@@ -43,7 +45,10 @@ class _QuizState extends State<Quiz> {
             "Close-ended questions are questions that have predetermined answers",
         buttons: [
           DialogButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              isEnable = true;
+              Navigator.pop(context);
+            },
             width: 120,
             child: const Text(
               "Try Aging",
@@ -57,6 +62,9 @@ class _QuizState extends State<Quiz> {
       });
     }
   }
+
+  final ButtonStyle style =
+      ElevatedButton.styleFrom(textStyle: const TextStyle(color: Colors.green));
 
   @override
   Widget build(BuildContext context) {
@@ -89,42 +97,25 @@ class _QuizState extends State<Quiz> {
                   children: [
                     Expanded(
                         child: ElevatedButton(
-                      onPressed: () {
-                        checkAnswer(true);
-                      },
-                      child: const Center(child: Text('True')),
-                    )),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            onPressed: () {
+                              isEnable ? checkAnswer(true) : null;
+                            },
+                            child: const Center(child: Text('True')))),
                     const SizedBox(
                       width: 8,
                     ),
                     Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            if (quizBrain.getAnswer() == false) {
-                              print('wrong.................');
-                              score.add(const Icon(
-                                Icons.close,
-                                color: Colors.red,
-                              ));
-                            } else {
-                              print('correct................');
-                              score.add(Image.asset(
-                                'assets/images/icons8-select-checkmark-symbol-to-choose-true-answer-24.png',
-                                color: const Color(0xff044b04),
-                              ));
-                            }
-                          });
-                          quizBrain.nextQuestion();
-                        },
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                          ),
-                          child: const Center(child: Text('False')),
-                        ),
-                      ),
-                    ),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            onPressed: () {
+                              isEnable ? checkAnswer(false) : null;
+                            },
+                            child: const Center(child: Text('false')))),
                   ],
                 ),
               ),
